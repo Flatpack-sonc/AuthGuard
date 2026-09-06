@@ -1,5 +1,5 @@
-name: AuthGuard
-description: Defensive OAuth/OIDC/JWT configuration auditor — discovery + JWKS hardening checks with SARIF output.
+name: Flatpack OIDC Auditor
+description: Defensive OAuth/OIDC discovery and JWKS hardening auditor with SARIF, suppressions, and baseline support.
 author: Flatpack-sonc
 branding:
   icon: shield
