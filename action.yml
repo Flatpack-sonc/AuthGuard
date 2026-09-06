@@ -1,6 +1,6 @@
 name: AuthGuard
 description: Defensive OAuth/OIDC/JWT configuration auditor — discovery + JWKS hardening checks with SARIF output.
-author: AuthGuard
+author: Flatpack-sonc
 branding:
   icon: shield
   color: blue

@@ -218,4 +218,6 @@ tests/AuthGuard.Tests/
 
 ## License
 
+MIT — see [LICENSE](LICENSE).
+
 For defensive assessment of systems you own or are explicitly authorized to review.
