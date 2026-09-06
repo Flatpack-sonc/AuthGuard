@@ -1,0 +1,13 @@
+{
+  "issuer": "http://bad.example.com",
+  "authorization_endpoint": "http://bad.example.com/authorize",
+  "token_endpoint": "http://bad.example.com/token",
+  "jwks_uri": "http://bad.example.com/jwks",
+  "scopes_supported": ["profile", "email"],
+  "response_types_supported": ["code", "token", "id_token", "code id_token", "code token", "code id_token token"],
+  "grant_types_supported": ["authorization_code", "implicit", "password", "refresh_token"],
+  "subject_types_supported": ["public"],
+  "id_token_signing_alg_values_supported": ["none", "HS256", "RS256"],
+  "token_endpoint_auth_methods_supported": ["none"],
+  "claims_supported": []
+}

@@ -1,0 +1,21 @@
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "use": "sig",
+      "alg": "RS256",
+      "kid": "good-key-1",
+      "n": "sXZX9examplemodulusbase64urlwouldbelongerinthistestfixturevalue000",
+      "e": "AQAB"
+    },
+    {
+      "kty": "EC",
+      "use": "sig",
+      "alg": "ES256",
+      "kid": "good-key-2",
+      "crv": "P-256",
+      "x": "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU",
+      "y": "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
+    }
+  ]
+}

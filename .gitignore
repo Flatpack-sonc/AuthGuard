@@ -1,0 +1,78 @@
+## .NET
+bin/
+obj/
+*.user
+*.dll
+*.exe
+*.pdb
+*.cache
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+## Visual Studio / Rider / editors
+.vs/
+.vscode/
+.idea/
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+*.suo
+*.userprefs
+
+## NuGet
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Test / coverage
+TestResults/
+[Cc]overage*/
+*.coverage
+*.coveragexml
+coverage.json
+coverage.opencover.xml
+
+## OS / misc
+.DS_Store
+Thumbs.db
+*~
+*.swp
+
+## Local / secrets (never commit)
+.env
+.env.*
+!.env.example
+*.pfx
+*.pem
+secrets.json
+appsettings.*.local.json
+
+## AuthGuard outputs
+reports/
+*.sarif
+audit-report.html
+audit-report.json

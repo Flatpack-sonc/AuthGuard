@@ -1,0 +1,49 @@
+# Example: audit your IdP on a schedule + upload SARIF
+name: AuthGuard OIDC audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  push:
+    paths:
+      - ".authguard.yml"
+      - ".authguard-baseline.json"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run AuthGuard
+        id: ag
+        uses: ./
+        with:
+          issuer: https://login.microsoftonline.com/common/v2.0
+          profile: standard
+          idp: enterprise
+          fail-on: high
+          policy-file: .authguard.yml
+          baseline: .authguard-baseline.json
+          sarif-file: authguard.sarif
+          json-file: authguard.json
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: authguard.sarif
+        continue-on-error: true
+
+      - name: Upload JSON artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: authguard-report
+          path: |
+            authguard.json
+            authguard.sarif

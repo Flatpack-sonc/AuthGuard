@@ -1,0 +1,16 @@
+# AuthGuard policy — tune for your IdP so CI is signal, not noise.
+# Generate with:  authguard init
+
+profile: standard
+idp: enterprise
+fail_on: high
+baseline: .authguard-baseline.json
+
+suppressions:
+  # Example (uncomment and edit):
+  # - id: AG-FLOW-001
+  #   reason: "Entra advertises hybrid for legacy Outlook; tracked migration"
+  #   until: 2027-06-01
+  #   ticket: SEC-123
+
+issuers: []

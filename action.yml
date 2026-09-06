@@ -1,0 +1,108 @@
+name: AuthGuard
+description: Defensive OAuth/OIDC/JWT configuration auditor — discovery + JWKS hardening checks with SARIF output.
+author: AuthGuard
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  issuer:
+    description: OIDC issuer URL to audit
+    required: true
+  profile:
+    description: Policy profile (relaxed | standard | strict)
+    required: false
+    default: standard
+  idp:
+    description: IdP preset (generic | spa | mobile | enterprise)
+    required: false
+    default: generic
+  fail-on:
+    description: Fail the job if active findings at or above this severity
+    required: false
+    default: high
+  policy-file:
+    description: Optional path to .authguard.yml (empty = auto-discover)
+    required: false
+    default: ""
+  baseline:
+    description: Optional path to baseline JSON
+    required: false
+    default: ""
+  sarif-file:
+    description: SARIF output path
+    required: false
+    default: authguard.sarif
+  json-file:
+    description: JSON report path (always written for drift/artifacts)
+    required: false
+    default: authguard.json
+  working-directory:
+    description: Directory containing the AuthGuard solution
+    required: false
+    default: .
+
+outputs:
+  sarif-file:
+    description: Path to the generated SARIF file
+    value: ${{ inputs.sarif-file }}
+  json-file:
+    description: Path to the generated JSON file
+    value: ${{ inputs.json-file }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: "8.0.x"
+
+    - name: Build AuthGuard
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: dotnet build src/AuthGuard.Cli/AuthGuard.Cli.csproj -c Release --nologo
+
+    - name: Run AuthGuard audit
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+        EXTRA=()
+        if [ -n "${{ inputs.policy-file }}" ]; then
+          EXTRA+=(--policy-file "${{ inputs.policy-file }}")
+        fi
+        if [ -n "${{ inputs.baseline }}" ]; then
+          EXTRA+=(--baseline "${{ inputs.baseline }}")
+        fi
+
+        # JSON snapshot first (never fails the job on findings — fail-on info would always fail;
+        # use critical-only impossible threshold via fail-on critical after empty? Better: fail-on and ignore exit for JSON)
+        set +e
+        dotnet run --project src/AuthGuard.Cli -c Release --no-build -- \
+          audit "${{ inputs.issuer }}" \
+          --profile "${{ inputs.profile }}" \
+          --idp "${{ inputs.idp }}" \
+          --fail-on critical \
+          --format json \
+          --output "${{ inputs.json-file }}" \
+          --no-color \
+          "${EXTRA[@]}"
+        JSON_EXIT=$?
+        set -e
+        if [ "$JSON_EXIT" -ge 2 ]; then
+          echo "AuthGuard failed with tool error while writing JSON (exit $JSON_EXIT)"
+          exit 2
+        fi
+
+        set +e
+        dotnet run --project src/AuthGuard.Cli -c Release --no-build -- \
+          audit "${{ inputs.issuer }}" \
+          --profile "${{ inputs.profile }}" \
+          --idp "${{ inputs.idp }}" \
+          --fail-on "${{ inputs.fail-on }}" \
+          --format sarif \
+          --output "${{ inputs.sarif-file }}" \
+          --no-color \
+          "${EXTRA[@]}"
+        exit $?
