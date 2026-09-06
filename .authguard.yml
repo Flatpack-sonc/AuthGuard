@@ -1,16 +1,12 @@
-# AuthGuard policy — tune for your IdP so CI is signal, not noise.
-# Generate with:  authguard init
+# Sample policy for this repository.
+# Point authguard at YOUR issuer in consuming repos and add suppressions/baseline there.
 
 profile: standard
 idp: enterprise
 fail_on: high
-baseline: .authguard-baseline.json
 
-suppressions:
-  # Example (uncomment and edit):
-  # - id: AG-FLOW-001
-  #   reason: "Entra advertises hybrid for legacy Outlook; tracked migration"
-  #   until: 2027-06-01
-  #   ticket: SEC-123
+# baseline: .authguard-baseline.json
+
+suppressions: []
 
 issuers: []

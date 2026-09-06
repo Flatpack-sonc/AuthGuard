@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Build
+        run: dotnet build AuthGuard.sln -c Release --nologo
+
+      - name: Test
+        run: dotnet test AuthGuard.sln -c Release --no-build --nologo
+
+      - name: Offline audit (good fixture must be clean at fail-on high)
+        run: |
+          dotnet run --project src/AuthGuard.Cli -c Release --no-build -- \
+            audit \
+            --config tests/AuthGuard.Tests/Fixtures/good-discovery.json \
+            --jwks tests/AuthGuard.Tests/Fixtures/good-jwks.json \
+            --idp generic \
+            --no-policy-file \
+            --fail-on high \
+            --format json \
+            --output authguard-fixture.json \
+            --no-color

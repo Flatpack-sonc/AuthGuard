@@ -155,10 +155,12 @@ Reports added, resolved, and severity changes. Exit `1` on regressions at or abo
 
 ## CI / GitHub Action
 
-Composite action: `action.yml`. Example workflow: `.github/workflows/authguard-example.yml`.
+- **CI** (`.github/workflows/ci.yml`): build, test, offline fixture audit — must stay green.
+- **Live demo** (`.github/workflows/authguard-live-demo.yml`): optional schedule / manual run against a public IdP.
+- **Composite action** (`action.yml`): embed AuthGuard in your own workflows.
 
 ```yaml
-- uses: Flatpack-sonc/AuthGuard@main
+- uses: Flatpack-sonc/AuthGuard@master
   with:
     issuer: https://login.example.com
     idp: enterprise
@@ -170,6 +172,8 @@ Composite action: `action.yml`. Example workflow: `.github/workflows/authguard-e
 ```
 
 Upload SARIF with `github/codeql-action/upload-sarif`. Keep JSON artifacts for drift.
+
+> Large public IdPs (e.g. Microsoft `/common`) often advertise legacy flows. Use suppressions/baseline for *your* tenant, or raise `--fail-on` only after noise is handled — otherwise CI will correctly exit `1`.
 
 ---
 

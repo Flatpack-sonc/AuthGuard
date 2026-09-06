@@ -22,11 +22,11 @@ inputs:
     required: false
     default: high
   policy-file:
-    description: Optional path to .authguard.yml (empty = auto-discover)
+    description: Optional path to .authguard.yml (empty = auto-discover from cwd)
     required: false
     default: ""
   baseline:
-    description: Optional path to baseline JSON
+    description: Optional path to baseline JSON (skipped if file is missing)
     required: false
     default: ""
   sarif-file:
@@ -34,7 +34,7 @@ inputs:
     required: false
     default: authguard.sarif
   json-file:
-    description: JSON report path (always written for drift/artifacts)
+    description: JSON report path
     required: false
     default: authguard.json
   working-directory:
@@ -69,15 +69,15 @@ runs:
       run: |
         set -euo pipefail
         EXTRA=()
-        if [ -n "${{ inputs.policy-file }}" ]; then
+        if [ -n "${{ inputs.policy-file }}" ] && [ -f "${{ inputs.policy-file }}" ]; then
           EXTRA+=(--policy-file "${{ inputs.policy-file }}")
         fi
-        if [ -n "${{ inputs.baseline }}" ]; then
+        if [ -n "${{ inputs.baseline }}" ] && [ -f "${{ inputs.baseline }}" ]; then
           EXTRA+=(--baseline "${{ inputs.baseline }}")
+        elif [ -n "${{ inputs.baseline }}" ]; then
+          echo "Baseline path set but file missing — continuing without baseline: ${{ inputs.baseline }}"
         fi
 
-        # JSON snapshot first (never fails the job on findings — fail-on info would always fail;
-        # use critical-only impossible threshold via fail-on critical after empty? Better: fail-on and ignore exit for JSON)
         set +e
         dotnet run --project src/AuthGuard.Cli -c Release --no-build -- \
           audit "${{ inputs.issuer }}" \
@@ -105,4 +105,6 @@ runs:
           --output "${{ inputs.sarif-file }}" \
           --no-color \
           "${EXTRA[@]}"
-        exit $?
+        AUDIT_EXIT=$?
+        set -e
+        exit "$AUDIT_EXIT"
